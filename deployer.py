@@ -96,21 +96,18 @@ class Deployer:
         for server in self.server_list:
             server.test_ssh()
 
-    def _process_copy(self, server, scp_command, local_path, remote_path):
-        print("\n{0} {local} to {color_ip}:{remote}".format(color_str(Color.YELLOW, 'Uploading...'), local=local_path, remote=remote_path, color_ip=color_str(Color.FUCHSIA, server.ip)))
+    def _process_copy(self, server, scp_command, local_path, remote_path, reverse):
+        if reverse:
+            print("\n{0} {color_ip}:{local} to {remote}".format(color_str(Color.YELLOW, 'Downloading...'), local=local_path, remote=remote_path, color_ip=color_str(Color.FUCHSIA, server.ip)))
+        else:
+            print("\n{0} {local} to {color_ip}:{remote}".format(color_str(Color.YELLOW, 'Uploading...'), local=local_path, remote=remote_path, color_ip=color_str(Color.FUCHSIA, server.ip)))
         os.system(scp_command)
 
     @print_run_time('scp传输文件')
-    def copy_file(self, local_path, remote_path=None, select_server=None):
+    def copy_file(self, local_path, remote_path=None, select_server=None, reverse=False):
         """
-        scp方式复制文件到所有服务器的指定目录
+        scp方式复制文件，reverse=True表示从远程复制到本地
         """
-        get_remote_home = False
-
-        # 如果没有指定远程目录, 则直接用远程目录的echo $HOME目录
-        if not remote_path:
-            get_remote_home = True
-
         select_server = select_server if select_server else self.server_list
 
         pool = Pool(cpu_count() + 1)
@@ -119,20 +116,29 @@ class Deployer:
             if not server.is_ok:
                 print("{} 无法连接, 直接跳过".format(color_str(Color.RED, server.ip)))
                 continue
-            
-            if get_remote_home:
-                result = Connection(server.ip, server.user, server.port).run('echo $HOME', hide=True)
-                remote_path = result.stdout
+
+            # 如果remote_path为空则自动获取
+            if not remote_path:
+                if reverse:
+                    remote_path = '.'
+                else:
+                    result = Connection(server.ip, server.user, server.port).run('echo $HOME', hide=True)
+                    remote_path = result.stdout
             else:
                 # 传输文件前先确保目录远程存在, 自动创建目录
-                if len(remote_path) > 1:
+                if len(remote_path) > 1 and not reverse:
                     Connection(server.ip, server.user, server.port).run('mkdir -p {}'.format(remote_path[:remote_path.rfind('/')]), hide=True)
-
-            scp_command = 'scp -P {server.port} -r {local} {server.user}@{server.ip}:{remote}'.format(server=server, local=local_path, remote=remote_path)
+                else:
+                    os.system('mkdir -p {}'.format(remote_path[:remote_path.rfind('/')]))
+            
+            if reverse:
+                scp_command = 'scp -P {server.port} -r {server.user}@{server.ip}:{local} {remote}'.format(server=server, local=local_path, remote=remote_path)
+            else:
+                scp_command = 'scp -P {server.port} -r {local} {server.user}@{server.ip}:{remote}'.format(server=server, local=local_path, remote=remote_path)
 
             if server.is_ok:
                 print("\n多进程模式传输文件: %s" % color_str(Color.CYAN, local_path))
-                pool.apply_async(self._process_copy, args=(server, scp_command, local_path, remote_path))       
+                pool.apply_async(self._process_copy, args=(server, scp_command, local_path, remote_path, reverse))       
         
         pool.close()
         #调用join之前，先调用close函数，否则会出错。执行完close后不会有新的进程加入到pool,join函数等待所有子进程结束

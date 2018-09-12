@@ -15,25 +15,51 @@ def show_help():
         info = sys.argv[0]
     print(
     """
+直接运行 {info} 添加管理待操作的服务器
+
+命令行参数:
 Usage: {info} [options] [command][selectServer]
 Options:
-    -h,  --help                output usage information
-    put                        batch upload file 
-    run                        batch run command
-    info                       show server info
-Commands:
-    local[:remote]             for put options to upload file, no ':remote' mean upload to target server '~' path. you can use '~' path
-    "shell command"                     for run options to run command , must wrap with " or '
+    -h,  --help                显示帮助
+    push                       本地服务器推送文件到远程
+    pull                       拉取远程服务器文件到本地
+    run                        运行命令
+    info                       显示操作服务器列表
+Command:
+    local[:remote]             搭配push操作, 如果remote远程不指定,则默认推送到远程的用户目录, 即'~'
+    remote[:local]             搭配pull操作, 如果local本地不指定，则默认拉取文件到当前目录, 即'.'
+    "shell command"            搭配run操作, 运行的命令必须用英文单引号或双引号包括
 SelectServer:
-    93,62                      remark contain '93' or '62' server can effect
-Example:
-    {info} put ~/23.tar   #upload ~/23.tar file to target server '~' path
-    {info} put /home/v2ray:~/great/  #upload /home/v2ray folder to ~/great/ path
-    {info} put /home/v2ray:~/great/ 打包  #upload /home/v2ray folder to ~/great/ path in remark contain '打包' server
-    {info} run 'date'     #batch run command to show server time
-    {info} run 'tar xzvf v2ray.tar.gz && cd v2ray'     #batch extract v2ray.tar.gz and cd to v2ray
-    {info} run 'tar xzvf v2ray.tar.gz && cd v2ray' 93,32   #batch extract v2ray.tar.gz and cd to v2ray in remark contain '93' or '32' server 
+    serverRemark               作用于包含指定备注的服务器, 此字段不指定则表示作用于所有服务器;
+                               多个备注用英文','隔开; 
+                               备注内容不能包含空格; 
+                               pull操作必须指定备注, 且匹配到的服务器只能一个
     """.format(info=info))
+# eng.ver
+#     print(
+#     """
+# Usage: {info} [options] [command][selectServer]
+# Options:
+#     -h,  --help                output usage information
+#     push                       batch transfer file to other server
+#     pull                       pull remote server file to local server
+#     run                        batch run command
+#     info                       show server info
+# Commands:
+#     local[:remote]             for push options to upload file, no ':remote' mean upload to target server '~' path. you can use '~' path
+#     remote[:local]             for pull options to pull file, no ':local' mean pull file to local server '.' path.
+#     "shell command"            for run options to run command , must wrap with " or '
+# SelectServer:
+#     93,62                      remark contain '93' or '62' server can effect, pull mode must be only one server
+# Example:
+#     {info} push ~/23.tar   #upload ~/23.tar file to target server '~' path
+#     {info} push /home/v2ray:~/great/  #upload /home/v2ray folder to ~/great/ path
+#     {info} push /home/v2ray:~/great/ 打包  #upload /home/v2ray folder to ~/great/ path in remark contain '打包' server
+#     {info} pull /home/v2ray/1.tar.gz 36  #pull remote server /home/v2ray/1.tar.gz to local server ~ path in remark contain '36' server
+#     {info} run 'date'     #batch run command to show server time
+#     {info} run 'tar xzvf v2ray.tar.gz && cd v2ray'     #batch extract v2ray.tar.gz and cd to v2ray
+#     {info} run 'tar xzvf v2ray.tar.gz && cd v2ray' 93,32   #batch extract v2ray.tar.gz and cd to v2ray in remark contain '93' or '32' server 
+#     """.format(info=info))
 
 def loop_input_choice_number(input_tip, number_max):
     """
@@ -123,7 +149,7 @@ def deal_select_server(select_server_str):
         server.test_ssh()
     return server_list
 
-def put_file_controller(args_list):
+def push_file_controller(args_list):
     if not args_list:
         print(color_str(Color.RED, '传参有误!'))
         show_help()
@@ -146,6 +172,36 @@ def put_file_controller(args_list):
 
     else:
         print(color_str(Color.RED, '传参有误!'))
+        show_help()
+
+def pull_file_controller(args_list):
+    if not args_list:
+        print(color_str(Color.RED, '传参有误!'))
+        show_help()
+    elif len(args_list) == 1 and len(dp.server_list) == 1:
+        dp.test_server()
+
+        pull_paths = args_list[0].split(':')
+        local = pull_paths[0]
+        remote = pull_paths[1] if len(pull_paths) == 2 else None
+        dp.copy_file(local, remote, reverse=True)
+    elif len(args_list) == 2:
+        pull_paths = args_list[0].split(':')
+        local = pull_paths[0]
+        remote = pull_paths[1] if len(pull_paths) == 2 else None
+
+        select_server = args_list[1]
+
+        server_list=deal_select_server(select_server)
+        
+        if len(server_list) != 1:
+            raise ValueError(color_str(Color.RED, '有且仅有一个服务器来传输文件'))
+
+        dp.copy_file(local, remote, server_list, reverse=True)
+
+    else:
+        print(color_str(Color.RED, '传参有误!'))
+        print('如果有多个服务器必须指定{}服务器来拉取'.format(color_str(Color.CYAN, '有且仅有一个')))
         show_help()
 
 def run_command_controller(args_list):
@@ -175,8 +231,10 @@ if __name__=='__main__':
 
     if not opts:
         loop_manage_server()
-    elif opts[0] == 'put':
-        put_file_controller(opts[1:])
+    elif opts[0] == 'push':
+        push_file_controller(opts[1:])
+    elif opts[0] == 'pull':
+        pull_file_controller(opts[1:])
     elif opts[0] == 'run':
         run_command_controller(opts[1:])
     elif opts[0] == 'info':

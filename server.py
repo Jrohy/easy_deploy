@@ -42,18 +42,20 @@ class Server:
         # 调试模式,设置超时
         # process = pexpect.spawnu('ssh %s' % self._get_server_command(), timeout=10, logfile=sys.stdout)
         process = pexpect.spawnu('ssh %s' % self._get_server_command(), timeout=10)
-        while True:
-            # 待终端回显项, (?i)表示忽略大小写
-            index = process.expect([
+        response = [
                 '(?i)yes/no',
                 self.user,
                 '(?i)Permission denied',
                 '(?i)password',
                 '(?i)failed',
                 '(?i)not known',
+                '(?i)Connection refused',
                 pexpect.TIMEOUT,
                 pexpect.EOF
-            ])
+            ]
+        while True:
+            # 待终端回显项, (?i)表示忽略大小写
+            index = process.expect(response)
             # print("index ==> %d" % index)
             if index == 0:
                 process.sendline('yes')
@@ -63,9 +65,9 @@ class Server:
                 process.sendcontrol('d') 
                 # process.sendeof()
 
-            elif index == 2 or index == 3 or index == 4 or index == 5 or index == 6:
+            elif index == 2 or index == 3 or index == 4 or index == 5 or index == 6 or index == 7:
                 self.is_ok = False
-                print("{0} test {1}".format(color_str(Color.FUCHSIA, self.ip), color_str(Color.RED, 'fail')))
+                print("{0} test {1}: {2}".format(color_str(Color.FUCHSIA, self.ip), color_str(Color.RED, 'fail'), color_str(Color.CYAN, response[index][4:])))
                 break
 
             else:
