@@ -67,7 +67,7 @@ class Server:
 
             elif index == 2 or index == 3 or index == 4 or index == 5 or index == 6 or index == 7:
                 self.is_ok = False
-                print("{0} test {1}: {2}".format(color_str(Color.FUCHSIA, self.ip), color_str(Color.RED, 'fail'), color_str(Color.CYAN, response[index][4:])))
+                print("{0} test {1}".format(color_str(Color.FUCHSIA, self.ip), color_str(Color.RED, 'fail')))
                 break
 
             else:
