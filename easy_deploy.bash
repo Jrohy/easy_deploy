@@ -14,12 +14,14 @@ function _auto_tab() {
 	fi
 
 	case $prev in
-		'easy_deploy')
+		'gosuncn')
 			COMPREPLY=( $(compgen -W "${options_array[*]}" -- $cur) ) ;;
 		'push')
-			COMPREPLY=( $(compgen -W "${local_file_array[*]}" -- $cur) ) ;;
+			compopt -o nospace
+			COMPREPLY=( $(compgen -d -f ${cur}) );;
 		'pull')
-			COMPREPLY=( $(compgen -W "${local_file_array[*]}" -- $cur) ) ;;
+			compopt -o nospace
+			COMPREPLY=( $(compgen -d -f ${cur}) );;
 		'run')
 			#命令补全后不要多加空格
 			compopt -o nospace
@@ -27,6 +29,7 @@ function _auto_tab() {
 		'*')
 			COMPREPLY=( $(compgen -W "${local_file_array[*]}" -- $cur) ) ;;
 	esac
+
 
 	return 0
 }
