@@ -44,10 +44,10 @@ class Deployer:
                         raise ValueError('配置格式不正确, 请执行:{}, 再重新运行'.format(color_str(Color.CYAN, 'rm -f ' + file_path)))
                     ip = frag_info[0]
                     port = frag_info[1]
-                    remark = frag_info[2]
+                    keyword = frag_info[2]
                     create_date = int(frag_info[3])
 
-                    one_server = Server(ip, user=user, port=port, create_date=create_date, remark=remark)
+                    one_server = Server(ip, user=user, port=port, create_date=create_date, keyword=keyword)
 
                     server_list.append(one_server)
 
@@ -174,16 +174,15 @@ class Deployer:
         
         
     @auto_save_data
-    def modify_server_list(self, server=None, clean=False, delete_index=None, orderBy=None, remark_dict={}):
+    def modify_server_list(self, server=None, clean=False, delete_index=None, orderBy=None, keyword_dict={}):
         if server:
             for exist_server in self.server_list:
                 if exist_server.ip == server.ip and exist_server.is_ok:
                     print("{0} 已存在".format(color_str(Color.FUCHSIA, server.ip)))
                     return
             self._server_list.append(server)
-        if remark_dict:
-            print("remark_list: %s" % remark_dict)
-            self._server_list[remark_dict.get('index')].remark = remark_dict.get('remark')
+        if keyword_dict:
+            self._server_list[keyword_dict.get('index')].keyword = keyword_dict.get('keyword')
         if clean:
             self._server_list = list(filter(lambda server:server.is_ok, self.server_list))
         if delete_index:

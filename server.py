@@ -11,18 +11,18 @@ from utils import color_str, Color, print_run_time
 __author__ = 'Jrohy'
 
 class Server:
-    def __init__(self, ip, *, user='root', port=22, create_date=None, remark=None):
+    def __init__(self, ip, *, user='root', port=22, create_date=None, keyword=None):
         self.ip = ip
         self.user = user
         self.port = port
         self.create_date = int(time.time()) if create_date == None else create_date
-        self.remark = remark if remark else ip
+        self.keyword = keyword if keyword else ip
 
     # print一个实例打印的字符串
     def __str__(self):
         format_date = time.strftime("%Y-%m-%d %H:%M", time.localtime(int(self.create_date)))
         color_status = color_str(Color.GREEN if self.is_ok else Color.RED, self.is_ok)
-        return "{info}, remark:{color_remark}, status: {color_status},  createDate:{format_date}\n".format(self=self,color_remark=color_str(Color.CYAN, self.remark), info=self._get_server_command(True), color_status=color_status, format_date=format_date)
+        return "{info}, keyword:{color_keyword}, status: {color_status},  createDate:{format_date}\n".format(self=self,color_keyword=color_str(Color.CYAN, self.keyword), info=self._get_server_command(True), color_status=color_status, format_date=format_date)
 
     # 直接调用实例和打印一个实例显示的字符串一样
     def __repr__ (self):

@@ -70,12 +70,32 @@ def auto_save_data(func):
     """  
     def wrapper(*args, **kw):  
         func(*args, **kw) 
+        keyword_set = set()
         with open(args[0].file_path, 'w') as write_file:
             if not args[0].server_list:
                 write_file.writelines()
+            keyword_str = "	local keyword_array=("
             for server in args[0].server_list:
-                write_file.writelines('{self.user}@{self.ip} {self.port} {self.remark} {self.create_date}\n'.format(self=server))
+                write_file.writelines('{self.user}@{self.ip} {self.port} {self.keyword} {self.create_date}\n'.format(self=server))
+                keyword_set.add(server.keyword)
             print("已自动保存配置文件到 ==> %s" % args[0].file_path)
+
+        #修改命令行自动补全文件
+        bash_completion_file = "/etc/bash_completion.d/{}.bash".format(sys.argv[0])
+
+        if not os.path.exists(bash_completion_file):
+            raise FileNotFoundError("命令行自动补全文件不存在: {} not found".format(color_str(Color.CYAN, bash_completion_file)))
+
+        for index, keyword in enumerate(keyword_set):
+            keyword_str = keyword_str + '"{}"'.format(keyword)
+            if index+1 == len(keyword_set):
+                keyword_str = keyword_str + ")"
+            else:
+                keyword_str = keyword_str + " "
+        REPLACE_CMD = "sed -i 's/.*local keyword_array.*/{0}/g' {1}".format(keyword_str, bash_completion_file)
+        os.system(REPLACE_CMD)
+        print("如果有新增/修改keyword, 要马上在命令行使用(重开ssh会自动生效), 请手动执行命令:\n{}\n".format(color_str(Color.CYAN, "source " + bash_completion_file)))
+
     return wrapper
 
 def print_run_time(msg=None):
