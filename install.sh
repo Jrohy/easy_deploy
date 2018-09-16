@@ -52,7 +52,7 @@ python3 get-pip.py
 rm -f get-pip.py
 
 # 安装 pip依赖
-pip install fabric Pyinstaller 
+pip install fabric pexpect pyinstaller
 
 cd /usr/local/
 
