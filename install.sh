@@ -75,4 +75,7 @@ source /etc/bash_completion.d/easy_deploy.bash
 #加入环境变量
 [[ -z $(grep easy_deploy.bash ~/.bashrc) ]] && echo "source /etc/bash_completion.d/easy_deploy.bash" >> ~/.bashrc && source ~/.bashrc
 
+#解决Python3中文显示问题
+[[ -z $(grep PYTHONIOENCODING=utf-8 ~/.bashrc) ]] && echo "export PYTHONIOENCODING=utf-8" >> ~/.bashrc && source ~/.bashrc
+
 colorEcho ${GREEN} "Install success!"
