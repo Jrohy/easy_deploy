@@ -30,6 +30,7 @@ fi
 if [[ $1 == '--uninstall' ]];then
     [[ -e /usr/local/bin/easy_deploy ]] && rm -f /usr/local/bin/easy_deploy
     [[ -e /etc/bash_completion.d/easy_deploy.bash ]] && rm -f /etc/bash_completion.d/easy_deploy.bash
+    [[ -e /usr/local/easy_deploy/ ]] && rm -rf /usr/local/easy_deploy
     #删除easy_deploy环境变量
     sed -i '/easy_deploy/d' ~/.bashrc
     source ~/.bashrc
