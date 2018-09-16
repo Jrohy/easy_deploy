@@ -1,6 +1,5 @@
 # main function bound to gosuncn command
 function _auto_tab() {
-	local local_file_array=($(ls))
 	local options_array=("push" "pull" "info" "run" "-h")
 	local keyword_array=("172.16.11.101" "172.16.11.77" "172.16.13.199" "172.16.16.12" "192.168.36.93")
 	local cur pre
@@ -27,7 +26,7 @@ function _auto_tab() {
 			compopt -o nospace
 			COMPREPLY=( $(compgen -W "\'\'" -- $cur) ) ;;
 		'*')
-			COMPREPLY=( $(compgen -W "${local_file_array[*]}" -- $cur) ) ;;
+			COMPREPLY=( $(compgen -d -f ${cur}) ) ;;
 	esac
 
 
