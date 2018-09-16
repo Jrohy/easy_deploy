@@ -40,10 +40,10 @@ fi
 #安装依赖
 if [[ ${OS} == 'CentOS' ]];then
     yum install epel-release curl wget unzip git -y
-    yum install python34 -y
+    yum install python34 python3-dev -y
 else
     apt-get update
-    apt-get install curl unzip git wget python3 -y
+    apt-get install curl unzip git wget python3 python3-dev -y
 fi
 
 # 安装最新版pip
