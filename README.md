@@ -4,6 +4,9 @@
 ### 安装 & 更新  
 `source <(curl -sL https://git.io/fA128)`
 
+### 仅更新python源码
+`source <(curl -sL https://git.io/fA128) --code`
+
 ### 卸载  
 `source <(curl -sL https://git.io/fA128) --uninstall`
 

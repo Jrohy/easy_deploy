@@ -9,18 +9,14 @@ from deployer import Deployer
 __author__ = 'Jrohy'
 
 def show_help():
-    if '.py' in sys.argv[0]:
-        info = 'python3 ' + sys.argv[0]
-    else:
-        info = sys.argv[0]
     print(
     """
-直接运行 {info} 添加管理待操作的服务器
+直接运行 {easy_deploy} 添加管理待操作的服务器
 
 命令行参数:
 按 {tab} 键自动显示所有的操作命令
 
-Usage: {info} [options] [command] [keyword] [keyword] [keyword]..
+Usage: {easy_deploy} [options] [command] [keyword] [keyword] [keyword]..
 {options}:
     -h,  --help                显示帮助
     push                       本地服务器推送文件到远程
@@ -36,7 +32,7 @@ Usage: {info} [options] [command] [keyword] [keyword] [keyword]..
                                keyword输入可以不完整, 只要匹配到包含的服务器keyword即可生效作用;
                                可以指定多个keyword(空格隔开), 第三个及之后的传参都认为keyword;
                                pull操作必须指定关键字, 且匹配到的服务器只能一个
-    """.format(options=color_str(Color.YELLOW, 'Options'),command=color_str(Color.YELLOW, 'Command'), keyword=color_str(Color.YELLOW, 'Keyword'), tab=color_str(Color.CYAN, 'Tab'), info=info))
+    """.format(options=color_str(Color.YELLOW, 'Options'),command=color_str(Color.YELLOW, 'Command'), keyword=color_str(Color.YELLOW, 'Keyword'), easy_deploy=color_str(Color.CYAN, 'easy_deploy'), tab=color_str(Color.CYAN, 'Tab')))
 
 def loop_input_choice_number(input_tip, number_max):
     """

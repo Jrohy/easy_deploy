@@ -26,6 +26,21 @@ if [ -f /etc/redhat-release ];then
         exit 1
 fi
 
+if [[ $1 == '--code' ]];then
+    colorEcho ${BLUE} "仅更新源码模式, 若运行不正常请重新安装!"
+
+    cd /usr/local/
+    if [[ -e easy_deploy && -e easy_deploy/.git ]];then
+        cd easy_deploy
+        git reset --hard && git pull
+        colorEcho ${GREEN} "python源码更新完成!"
+        exit 0
+    else
+        colorEcho ${RED} "未曾安装, 请用全新安装模式"
+        exit 1
+    fi
+fi
+
 #卸载
 if [[ $1 == '--uninstall' ]];then
     [[ -e /usr/local/bin/easy_deploy ]] && rm -f /usr/local/bin/easy_deploy
