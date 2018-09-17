@@ -65,6 +65,7 @@ else
     cd easy_deploy
 fi
 
+chmod +x easy_deploy
 cp -f easy_deploy /usr/local/bin/
 
 cp -f easy_deploy.bash /etc/bash_completion.d/

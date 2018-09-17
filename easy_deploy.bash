@@ -1,4 +1,4 @@
-# main function bound to gosuncn command
+# main function bound to easy_deploy command
 function _auto_tab() {
 	local options_array=("push" "pull" "info" "run" "-h")
 	local keyword_array=("172.16.11.101" "172.16.11.77" "172.16.13.199" "172.16.16.12" "192.168.36.93")
@@ -13,7 +13,7 @@ function _auto_tab() {
 	fi
 
 	case $prev in
-		'gosuncn')
+		'easy_deploy')
 			COMPREPLY=( $(compgen -W "${options_array[*]}" -- $cur) ) ;;
 		'push')
 			compopt -o nospace
