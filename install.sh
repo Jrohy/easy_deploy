@@ -41,10 +41,10 @@ fi
 #安装依赖
 if [[ ${OS} == 'CentOS' ]];then
     yum install epel-release curl wget unzip git -y
-    yum install python34 python3-dev -y
+    yum install python34 -y
 else
     apt-get update
-    apt-get install curl unzip git wget python3 python3-dev -y
+    apt-get install curl unzip git wget python3 -y
 fi
 
 # 安装最新版pip
@@ -53,7 +53,7 @@ python3 get-pip.py
 rm -f get-pip.py
 
 # 安装 pip依赖
-pip install fabric pexpect pyinstaller
+pip install fabric pexpect
 
 cd /usr/local/
 
@@ -65,9 +65,7 @@ else
     cd easy_deploy
 fi
 
-pyinstaller -F easy_deploy.py
-
-cp -f dist/easy_deploy /usr/local/bin/
+cp -f easy_deploy /usr/local/bin/
 
 cp -f easy_deploy.bash /etc/bash_completion.d/
 source /etc/bash_completion.d/easy_deploy.bash

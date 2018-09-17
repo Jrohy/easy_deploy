@@ -1,0 +1,10 @@
+#!/bin/bash
+
+#shell 入口程序
+
+if [[ $# > 0 ]];then
+    python3 /usr/local/easy_deploy/easy_deploy.py $@
+else
+    python3 /usr/local/easy_deploy/easy_deploy.py
+    source /etc/bash_completion.d/easy_deploy.bash
+fi
