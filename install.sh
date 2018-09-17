@@ -37,10 +37,12 @@ if [[ $1 == '--code' ]];then
         cd easy_deploy
         git reset --hard && git pull
         colorEcho ${GREEN} "python源码更新完成!"
+        cd ${BEGIN_PATH}
         return 0
     else
         colorEcho ${RED} "未曾安装, 请用全新安装模式"
-        exit 1
+        cd ${BEGIN_PATH}
+        return 1
     fi
 fi
 
