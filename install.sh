@@ -6,6 +6,9 @@ GREEN="32m"    # Success message
 YELLOW="33m"   # Warning message
 BLUE="36m"     # Info message
 
+#记录最开始运行脚本的路径
+BEGIN_PATH=$(pwd)
+
 colorEcho(){
     COLOR=$1
     echo -e "\033[${COLOR}${@:2}\033[0m"
@@ -91,5 +94,8 @@ source /etc/bash_completion.d/easy_deploy.bash
 
 #解决Python3中文显示问题
 [[ -z $(grep PYTHONIOENCODING=utf-8 ~/.bashrc) ]] && echo "export PYTHONIOENCODING=utf-8" >> ~/.bashrc && source ~/.bashrc
+
+#回到原点
+cd ${BEGIN_PATH}
 
 colorEcho ${GREEN} "Install success!"
