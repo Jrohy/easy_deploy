@@ -81,7 +81,7 @@ def auto_save_data(func):
             print("已自动保存配置文件到 ==> %s" % args[0].file_path)
 
         #修改命令行自动补全文件
-        bash_completion_file = "/etc/bash_completion.d/{}.bash".format(sys.argv[0])
+        bash_completion_file = "/etc/bash_completion.d/easy_deploy.bash"
 
         if not os.path.exists(bash_completion_file):
             raise FileNotFoundError("命令行自动补全文件不存在: {} not found".format(color_str(Color.CYAN, bash_completion_file)))
