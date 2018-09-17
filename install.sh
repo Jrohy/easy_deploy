@@ -37,7 +37,7 @@ if [[ $1 == '--code' ]];then
         cd easy_deploy
         git reset --hard && git pull
         colorEcho ${GREEN} "python源码更新完成!"
-        exit 0
+        exit
     else
         colorEcho ${RED} "未曾安装, 请用全新安装模式"
         exit 1
@@ -53,7 +53,7 @@ if [[ $1 == '--uninstall' ]];then
     sed -i '/easy_deploy/d' ~/.bashrc
     source ~/.bashrc
     colorEcho ${GREEN} "uninstall success!"
-    exit 0
+    exit
 fi
 
 #安装依赖
