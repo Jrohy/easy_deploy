@@ -126,10 +126,11 @@ class Deployer:
                     remote_path = result.stdout
             else:
                 # 传输文件前先确保目录远程存在, 自动创建目录
-                if len(remote_path) > 1 and not reverse:
-                    Connection(server.ip, server.user, server.port).run('mkdir -p {}'.format(remote_path[:remote_path.rfind('/')]), hide=True)
-                else:
-                    os.system('mkdir -p {}'.format(remote_path[:remote_path.rfind('/')]))
+                if remote_path.count('/') > 1:
+                    if reverse:
+                        os.system('mkdir -p {}'.format(remote_path[:remote_path.rfind('/')]))
+                    else:
+                        Connection(server.ip, server.user, server.port).run('mkdir -p {}'.format(remote_path[:remote_path.rfind('/')]), hide=True)
             
             if reverse:
                 scp_command = 'scp -P {server.port} -r {server.user}@{server.ip}:{local} {remote}'.format(server=server, local=local_path, remote=remote_path)
